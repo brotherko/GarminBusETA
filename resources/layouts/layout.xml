@@ -1,0 +1,78 @@
+<layouts>
+	<layout id="MainLayout">
+		<drawable id="busSignBackground" />
+		<text-area x="center"
+			y="5"
+			width="100%"
+			height="60"
+			color="Graphics.COLOR_WHITE"
+			justification="Graphics.TEXT_JUSTIFY_CENTER"
+			background="0xe42127"
+			id="route" />
+		<text-area x="center"
+			y="55"
+			justification="Graphics.TEXT_JUSTIFY_CENTER"
+			width="70%"
+			height="50"
+			id="directionName">
+				<fonts>
+					<font>Graphics.FONT_TINY</font>
+					<font>Graphics.FONT_XTINY</font>
+				</fonts>
+		</text-area>
+		<text-area x="left"
+			y="100"
+			width="100%"
+			height="38"
+			font="Graphics.FONT_XTINY"
+			color="Graphics.COLOR_BLACK"
+			justification="Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER"
+			id="lastUpdate" />
+		<text-area x="12%"
+			y="138"
+			text="11"
+			font="Graphics.FONT_NUMBER_HOT"
+			width="38%"
+			height="162"
+			color="Graphics.COLOR_BLACK"
+			justification="Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER"
+			id="etaTime0" />
+		<text-area x="50%"
+			y="138"
+			text="22"
+			font="Graphics.FONT_MEDIUM"
+			width="38%"
+			height="81"
+			color="Graphics.COLOR_BLACK"
+			justification="Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER"
+			id="etaTime1" />
+		<text-area x="50%"
+			y="220"
+			text="22"
+			font="Graphics.FONT_MEDIUM"
+			width="38%"
+			height="81"
+			color="Graphics.COLOR_BLACK"
+			justification="Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER"
+			id="etaTime2" />
+
+		<text-area x="center"
+			y="75%"
+			justification="Graphics.TEXT_JUSTIFY_CENTER"
+			width="60%"
+			height="30%"
+			id="stopName">
+			<fonts>
+        <font>Graphics.FONT_TINY</font>
+        <font>Graphics.FONT_XTINY</font>
+			</fonts>
+		</text-area>
+	</layout>
+	<layout id="InitLayout">
+		<label justification="Graphics.TEXT_JUSTIFY_CENTER"
+			text="Loading..."
+			x="center"
+			y="center"
+			color="Graphics.COLOR_WHITE" />
+	</layout>
+</layouts>

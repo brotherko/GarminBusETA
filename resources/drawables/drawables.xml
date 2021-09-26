@@ -1,0 +1,9 @@
+<drawables>
+  <bitmap id="LauncherIcon" filename="launcher_icon.png" />
+  <drawable-list id="busSignBackground" background="0xe42127">
+    <shape type="rectangle" x="12%" y="100" width="76%" height="200" color="0xFFFFFF" />
+    <shape type="rectangle" x="12%" y="138" width="76%" height="2" color="0x000000" />
+    <shape type="rectangle" x="50%" y="219" width="38%" height="2" color="0x000000" />
+    <shape type="rectangle" x="50%" y="138" width="2" height="163" color="0x000000" />
+  </drawable-list>
+</drawables>
