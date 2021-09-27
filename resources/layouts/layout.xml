@@ -30,7 +30,7 @@
 			id="lastUpdate" />
 		<text-area x="12%"
 			y="138"
-			text="11"
+			text="7"
 			font="Graphics.FONT_NUMBER_HOT"
 			width="38%"
 			height="162"
@@ -39,7 +39,7 @@
 			id="etaTime0" />
 		<text-area x="50%"
 			y="138"
-			text="22"
+			text="15"
 			font="Graphics.FONT_MEDIUM"
 			width="38%"
 			height="81"
@@ -48,7 +48,7 @@
 			id="etaTime1" />
 		<text-area x="50%"
 			y="220"
-			text="22"
+			text="35"
 			font="Graphics.FONT_MEDIUM"
 			width="38%"
 			height="81"

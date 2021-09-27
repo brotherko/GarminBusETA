@@ -18,25 +18,21 @@ class BusEtaApp extends Application.AppBase {
       :route => "101",
       :stop => "B4B94159F6B89A6B",
       :dir => "O",
-      :serviceType => 1,
     });
     etaManager.add({
       :route => "641",
       :stop => "72999453ECAC4693",
       :dir => "O",
-      :serviceType => 1,
     });
     etaManager.add({
       :route => "101",
       :stop => "50C82DFB0AC97FC8",
       :dir => "I",
-      :serviceType => 1,
     });
     etaManager.add({
       :route => "641",
       :stop => "50C82DFB0AC97FC8",
       :dir => "I",
-      :serviceType => 1,
     });
   }
 
@@ -47,7 +43,7 @@ class BusEtaApp extends Application.AppBase {
 
   function switchToCurrentPage(transition) {
     Ui.switchToView(
-      new BusEtaView(etaManager.getActiveService()),
+      new BusEtaView(etaManager.getActiveService().getBusEta()),
       new BusEtaDelegate(method(:switchPage)),
       transition
     );

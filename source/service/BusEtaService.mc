@@ -2,50 +2,40 @@ import Toybox.Application;
 import Toybox.System;
 
 class BusEtaService {
-  hidden var route;
-  hidden var dir;
-  hidden var stop;
-  hidden var serviceType;
-
-  hidden var onUpdate;
-  hidden var onReady;
-
-
-  var seq;
-  var directionName;
-  var stopName;
-  var eta;
-  var lastUpdate;
+  hidden var _busEta;
+  
+  hidden var _onUpdate;
+  hidden var _onReady;
 
   hidden var _queue;
 
   function initialize(opts) {
-    self.route = opts[:route];
-    self.dir = opts[:dir];
-    self.stop = opts[:stop];
-    self.serviceType = opts[:serviceType];
+    _busEta = new BusEta({
+      :route => opts[:route],
+      :dir => opts[:dir],
+      :stop => opts[:stop]
+    });
 
-    self.eta = new [3];
-
-    self.onUpdate = opts[:onUpdate];
-    self.onReady = opts[:onReady];
+    _onUpdate = opts[:onUpdate];
+    _onReady = opts[:onReady];
 
     _queue = new CommandExecutor();
 
-    self.init();
+    load();
   }
 
-  function init() {
-    var options = {                                             // set the options
-      :method => Communications.HTTP_REQUEST_METHOD_GET,      // set HTTP method
+  function load() {
+    var serviceType = "1";
+    var options = {
+      :method => Communications.HTTP_REQUEST_METHOD_GET,
       :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
     };
 
-    _queue.add_command(
+    _queue.addCommand(
       new WebRequestCommand(
         "https://data.etabus.gov.hk/v1/transport/kmb/route/"
-          + self.route + "/"
-          + (self.dir.equals("O") ? "outbound" : "inbound") + "/"
+          + _busEta.route + "/"
+          + (_busEta.dir.equals("O") ? "outbound" : "inbound") + "/"
           + serviceType,
         null,
         options,
@@ -53,87 +43,65 @@ class BusEtaService {
       )
     );
 
-    _queue.add_command(
+    _queue.addCommand(
       new WebRequestCommand(
         "https://data.etabus.gov.hk/v1/transport/kmb/route-stop/"
-          + self.route + "/"
-          + (self.dir.equals("O") ? "outbound" : "inbound") + "/"
+          + _busEta.route + "/"
+          + (_busEta.dir.equals("O") ? "outbound" : "inbound") + "/"
           + serviceType,
         null,
         options,
-        method(:getSeqResponseHandler)
+        method(:routeStopResponseHandler)
       )
     );
 
-    _queue.add_command(
+    _queue.addCommand(
       new WebRequestCommand(
         "https://data.etabus.gov.hk/v1/transport/kmb/stop/"
-          + self.stop,
+          + _busEta.stop,
         null,
         options,
-        method(:getStopInfoResponseHandler)
+        method(:stopResponseHandler)
       )
     );
 
     self.update();
 
-    _queue.add_command(
-      new UnaryCommand(method(:debugPrint), [])
-    );
-
-    if (onReady) {
-      _queue.add_command(
-        new UnaryCommand(onReady, [self])
+    if (_onReady) {
+      _queue.addCommand(
+        new UnaryCommand(_onReady, [self])
       );
     }
   }
 
-  function debugPrint() {
-    System.println("route:" + self.route);
-    System.println("dir:" + self.dir);
-    System.println("directionName:" + self.directionName);
-    System.println("seq:" + self.seq);
-    System.println("stop name:" + self.stopName);
-    System.println("ETA:" + self.eta);
+  function getBusEta() {
+    return _busEta;
   }
 
   function routeResponseHandler(responseCode, responseData) {
     if (responseCode == 200) {
       var data = responseData["data"];
-      self.directionName = data["dest_en"];
+      _busEta.directionName = data["dest_en"];
     }
   }
 
-
-  function getStopInfoResponseHandler(responseCode, responseData) {
+  function stopResponseHandler(responseCode, responseData) {
     if (responseCode == 200) {
       var data = responseData["data"];
-      self.stopName = data["name_en"];
+      _busEta.stopName = data["name_en"];
     }
   }
 
-  function getSeqResponseHandler(responseCode, responseData) {
+  function routeStopResponseHandler(responseCode, responseData) {
     if (responseCode == 200) {
       var data = responseData["data"];
       for (var i = 0; i < data.size(); i++) {
         var row = data[i];
-        if (row["stop"].equals(self.stop)) {
-          self.seq = row["seq"].toNumber();
+        if (row["stop"].equals(_busEta.stop)) {
+          _busEta.seq = row["seq"].toNumber();
         }
       }
     }
-  }
-
-  function getViewData() {
-    System.println("getviewdata");
-    var data = {
-      :route => self.route,
-      :directionName => self.directionName,
-      :stopName => self.stopName,
-      :eta => self.eta,
-      :lastUpdate => self.lastUpdate,
-    };
-    return data;
   }
 
   function update() {
@@ -142,38 +110,46 @@ class BusEtaService {
       :responseType => Communications.HTTP_RESPONSE_CONTENT_TYPE_JSON
     };
 
-    _queue.add_command(
+    _queue.addCommand(
       new WebRequestCommand(
         "https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/"
-          + self.stop,
+          + _busEta.stop,
         null,
         options,
         method(:updateHandler)
       )
     );
 
-    if (onUpdate) {
-      _queue.add_command(
-        new UnaryCommand(onUpdate, [self])
+    if (_onUpdate) {
+      _queue.addCommand(
+        new UnaryCommand(_onUpdate, [self])
       );
     }
   }
 
   function updateHandler(responseCode, responseData) {
+    var etaArrsize = 0;
+    var etaArr = new [10];
+
     if (responseCode == 200) {
       var data = responseData["data"];
       for (var i = 0; i < data.size(); i++) {
         var row = data[i];
-        if (row["route"].equals(self.route)
-          && row["seq"] == self.seq
-          && row["dir"].equals(self.dir)
-          && row["service_type"].equals(self.serviceType)
+        if (row["route"].equals(_busEta.route)
+          && row["seq"] == _busEta.seq
+          && row["dir"].equals(_busEta.dir)
         ) {
-          var etaMoment = row["eta"] ? TimeUtil.parseISOString(row["eta"]) : null;
-          self.eta[row["eta_seq"] - 1] = etaMoment;
+          if (row["eta"]) {
+            var etaMoment = TimeUtil.parseISOString(row["eta"]);
+            if (etaMoment) {
+              etaArr[etaArrsize] = etaMoment;
+              etaArrsize += 1;
+            }
+          }
         }
       }
-        self.lastUpdate = Time.now();
+      _busEta.updateEta(etaArr, etaArrsize);
+      _busEta.lastUpdate = Time.now();
     }
   }
 

@@ -17,7 +17,7 @@ class Command {
     _queue = null;
 
     if (queue != null) {
-      queue.finish_command();
+      queue.finishCommand();
     }
   }
 }
@@ -31,7 +31,7 @@ class CommandExecutor {
     _tail = null;
   }
 
-  function add_command(command) {
+  function addCommand(command) {
     command._queue = self;
 
     if (_head == null) {
@@ -45,7 +45,7 @@ class CommandExecutor {
     }
   }
 
-  function finish_command() {
+  function finishCommand() {
     // remove the front item in the queue
     var head = _head;
     _head = head._next;

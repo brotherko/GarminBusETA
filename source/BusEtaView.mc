@@ -3,22 +3,16 @@ import Toybox.WatchUi;
 using Toybox.Time.Gregorian;
 
 class BusEtaView extends WatchUi.View {
-  var busEtaService;
+  var busEta;
 
-  function initialize(busEtaService) {
-    self.busEtaService = busEtaService;
+  function initialize(busEta) {
+    self.busEta = busEta;
     View.initialize();
   }
 
   // Load your resources here
   function onLayout(dc as Dc) as Void {
     setLayout(Rez.Layouts.MainLayout(dc));
-  }
-
-  // Called when this View is brought to the foreground. Restore
-  // the state of this View and prepare it to be shown. This includes
-  // loading resources into memory.
-  function onShow() as Void {
   }
 
   function formatEtaMins(time) {
@@ -49,34 +43,35 @@ class BusEtaView extends WatchUi.View {
     return text;
   }
 
-  // Update the view
-  function onUpdate(dc as Dc) as Void {
-    View.onUpdate(dc);
-
-    var data = self.busEtaService.getViewData();
-    System.println("view data: " + data);
-
-    View.findDrawableById("route").setText(data[:route]);
-    View.findDrawableById("directionName").setText(data[:directionName]);
-    View.findDrawableById("etaTime0").setText(
-      formatEtaMins(data[:eta][0])
-    );
-    View.findDrawableById("etaTime1").setText(
-      formatEtaMins(data[:eta][1])
-    );
-    View.findDrawableById("etaTime2").setText(
-      formatEtaMins(data[:eta][2])
-    );
-    View.findDrawableById("lastUpdate").setText(
-      formatLastUpdate(data[:lastUpdate])
-    );
-    View.findDrawableById("stopName").setText(data[:stopName]);
-
+  function onShow() {
+    // updateScreen();
   }
 
-  // Called when this View is removed from the screen. Save the
-  // state of this View here. This includes freeing resources from
-  // memory.
+  function onUpdate(dc as Dc) as Void {
+    View.onUpdate(dc);
+    updateScreen();
+  }
+
+  function updateScreen() {
+    System.println("view data: " + busEta);
+
+    View.findDrawableById("route").setText(busEta[:route]);
+    View.findDrawableById("directionName").setText(busEta[:directionName]);
+    View.findDrawableById("etaTime0").setText(
+      formatEtaMins(busEta[:eta][0])
+    );
+    View.findDrawableById("etaTime1").setText(
+      formatEtaMins(busEta[:eta][1])
+    );
+    View.findDrawableById("etaTime2").setText(
+      formatEtaMins(busEta[:eta][2])
+    );
+    View.findDrawableById("lastUpdate").setText(
+      formatLastUpdate(busEta[:lastUpdate])
+    );
+    View.findDrawableById("stopName").setText(busEta[:stopName]);
+  }
+
   function onHide() as Void {
   }
 
